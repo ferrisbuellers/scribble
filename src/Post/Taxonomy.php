@@ -1,6 +1,6 @@
 <?php
 
-namespace FullStackFool\Post;
+namespace FullStackFool\Scribble\Post;
 
 use Corcel\TermTaxonomy as Corcel;
 
@@ -20,7 +20,7 @@ class Taxonomy extends Corcel
      */
     public function posts()
     {
-        return $this->belongsToMany(FullStackFool\Post::class, 'term_relationships', 'term_taxonomy_id', 'object_id')
+        return $this->belongsToMany(\FullStackFool\Scribble\Post::class, 'term_relationships', 'term_taxonomy_id', 'object_id')
                     ->published()->type('post');
     }
 
@@ -32,10 +32,20 @@ class Taxonomy extends Corcel
      */
     public function postSelection($limit = 4)
     {
-        return $this->belongsToMany(FullStackFool\Post::class, 'term_relationships', 'term_taxonomy_id', 'object_id')
+        return $this->belongsToMany(\FullStackFool\Scribble\Post::class, 'term_relationships', 'term_taxonomy_id', 'object_id')
                     ->published()
                     ->type('post')
                     ->orderBy('post_date_gmt', 'desc')
                     ->limit($limit);
+    }
+
+    /**
+     * Set taxonomy type to tag.
+     *
+     * @return Corcel\TermTaxonomyBuilder
+     */
+    public function tag()
+    {
+        return $this->where('taxonomy', 'post_tag');
     }
 }
