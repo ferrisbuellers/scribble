@@ -5,6 +5,7 @@ namespace FullStackFool\Scribble;
 use Corcel\Post as Corcel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 
 class Post extends Corcel
@@ -225,6 +226,64 @@ class Post extends Corcel
     }
 
     /**
+     * Get posts by categories
+     *
+     * @param Builder      $builder
+     * @param array|string $slugs The category slugs to filter by
+     */
+    public function scopeHasCategories(Builder $builder, $slugs)
+    {
+        $builder->whereHas('taxonomies', function ($query) use ($slugs) {
+            $query->category()->whereHas('term', function ($query) use ($slugs) {
+                $query->whereIn('slug', $slugs);
+            });
+        });
+    }
+
+    /**
+     * Get posts by tags
+     *
+     * @param Builder      $builder
+     * @param array|string $slugs The tag slugs to filter by
+     */
+    public function scopeHasTags(Builder $builder, $slugs)
+    {
+        $builder->whereHas('taxonomies', function ($query) use ($slugs) {
+            $query->where('taxonomy', '=', 'post_tag')->whereHas('term', function ($query) use ($slugs) {
+                $query->whereIn('slug', $slugs);
+            });
+        });
+    }
+
+    /**
+     * Get posts by array of search terms applied to post titles
+     *
+     * @param Builder $builder
+     * @param array   $keywords
+     */
+    public function scopeHasTitleKeywords(Builder $builder, array $keywords)
+    {
+        foreach ($keywords as $key => $keyword) {
+            if ($key == 0) {
+                $builder->where('post_title', 'like', '%' . $keyword . '%');
+            } else {
+                $builder->orWhere('post_title', 'like', '%' . $keyword . '%');
+            }
+        }
+    }
+
+    /**
+     * Get posts by month
+     *
+     * @param Builder $builder
+     * @param         $months
+     */
+    public function scopePublishedMonths(Builder $builder, $months)
+    {
+        $builder->whereIn(DB::raw('MONTHNAME(post_date_gmt)'), $months);
+    }
+
+    /**
      *  Get the associated tags
      *
      * @return mixed
@@ -286,5 +345,57 @@ class Post extends Corcel
         }
 
         return $meta;
+    }
+
+    /**
+     * Get the months that have post, with counts
+     *
+     * @return mixed
+     */
+    public function getMonthCounts()
+    {
+        $raw = $this->select(DB::raw("MONTHNAME(post_date_gmt) as month, COUNT(*) as count"))
+                    ->published()
+                    ->groupBy(DB::raw('MONTH(post_date_gmt)'))->get()->toArray();
+
+        return array_map(function ($a) {
+            return array_only($a, ['month', 'count']);
+        }, $raw);
+    }
+
+    /**
+     * Overrides default behaviour by instantiating class based on the $attributes->post_type value.
+     *
+     * By default, this method will always return an instance of the calling class. However if post types have
+     * been registered with the Post class using the registerPostType() static method, this will now return an
+     * instance of that class instead.
+     *
+     * If the post type string from $attributes->post_type does not appear in the static $postTypes array,
+     * then the class instantiated will be the called class (the default behaviour of this method).
+     *
+     * @param array $attributes
+     * @param null  $connection
+     *
+     * @return mixed
+     */
+    public function newFromBuilder($attributes = [], $connection = null)
+    {
+        if (is_object($attributes) && isset($attributes->post_type)
+            && array_key_exists($attributes->post_type, static::$postTypes)
+        ) {
+            $class = static::$postTypes[$attributes->post_type];
+        } elseif (is_array($attributes) && array_key_exists($attributes['post_type'], static::$postTypes)) {
+            $class = static::$postTypes[$attributes['post_type']];
+        } else {
+            $class = get_called_class();
+        }
+
+        $model = new $class([]);
+        $model->exists = true;
+
+        $model->setRawAttributes((array)$attributes, true);
+        $model->setConnection($connection ?: $this->connection);
+
+        return $model;
     }
 }
