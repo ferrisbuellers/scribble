@@ -147,7 +147,7 @@ class Post extends Corcel
      */
     public function getPublishedDate($format = 'jS F Y')
     {
-        return $this->post_date_gmt->format($format);
+        return $this->post_date->format($format);
     }
 
     /**
@@ -178,7 +178,7 @@ class Post extends Corcel
                 });
             });
 
-            $this->next = $query->orderBy('post_date_gmt', 'asc')->first();
+            $this->next = $query->orderBy('post_date', 'asc')->first();
         }
 
         return $this->next;
@@ -201,7 +201,7 @@ class Post extends Corcel
                 });
             });
 
-            $this->previous = $query->orderBy('post_date_gmt', 'desc')->first();
+            $this->previous = $query->orderBy('post_date', 'desc')->first();
         }
 
         return $this->previous;
@@ -218,7 +218,7 @@ class Post extends Corcel
      */
     public function scopeRecent(Builder $builder, $limit = null, $type = 'post')
     {
-        $builder->published()->type($type)->orderBy('post_date_gmt', 'desc');
+        $builder->published()->type($type)->orderBy('post_date', 'desc');
 
         if ( ! empty($limit)) {
             $builder->limit($limit);
@@ -280,7 +280,7 @@ class Post extends Corcel
      */
     public function scopePublishedMonths(Builder $builder, $months)
     {
-        $builder->whereIn(DB::raw('MONTHNAME(post_date_gmt)'), $months);
+        $builder->whereIn(DB::raw('MONTHNAME(post_date)'), $months);
     }
 
     /**
@@ -350,13 +350,15 @@ class Post extends Corcel
     /**
      * Get the months that have post, with counts
      *
+     * @param string $type
      * @return mixed
      */
-    public function getMonthCounts()
+    public function getMonthCounts($type = 'post')
     {
-        $raw = $this->select(DB::raw("MONTHNAME(post_date_gmt) as month, COUNT(*) as count"))
+        $raw = $this->select(DB::raw("MONTHNAME(post_date) as month, COUNT(*) as count"))
                     ->published()
-                    ->groupBy(DB::raw('MONTH(post_date_gmt)'))->get()->toArray();
+                    ->type($type)
+                    ->groupBy(DB::raw('MONTH(post_date)'))->get()->toArray();
 
         return array_map(function ($a) {
             return array_only($a, ['month', 'count']);
