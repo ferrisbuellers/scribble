@@ -1,6 +1,6 @@
 <?php
 
-namespace FullStackFool;
+namespace FullStackFool\Scribble;
 
 use Corcel\Post as Corcel;
 use Illuminate\Database\Eloquent\Builder;
