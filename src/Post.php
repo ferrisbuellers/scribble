@@ -163,20 +163,23 @@ class Post extends Corcel
     /**
      * Get the next post.
      *
+     * @param bool $scopeToCat Scope the return to the initial post's category
      * @return mixed
      */
-    public function next()
+    public function next($scopeToCat = true)
     {
         if ( ! $this->next) {
-            $query = $this->where('ID', '>', $this->ID)
+            $query = $this->where('post_date', '>', $this->post_date)
                           ->published()
                           ->type('post');
 
-            $query->whereHas('taxonomies', function ($query) {
-                $query->category()->whereHas('term', function ($q2) {
-                    $q2->where('name', '=', $this->getMainCategoryAttribute());
+            if ($scopeToCat) {
+                $query->whereHas('taxonomies', function ($query) {
+                    $query->category()->whereHas('term', function ($q2) {
+                        $q2->where('name', '=', $this->getMainCategoryAttribute());
+                    });
                 });
-            });
+            }
 
             $this->next = $query->orderBy('post_date', 'asc')->first();
         }
@@ -187,19 +190,22 @@ class Post extends Corcel
     /**
      * Get the previous post.
      *
+     * @param bool $scopeToCat Scope the return to the initial post's category
      * @return mixed
      */
-    public function previous()
+    public function previous($scopeToCat = true)
     {
         if ( ! $this->previous) {
-            $query = $this->where('ID', '<', $this->ID)
+            $query = $this->where('post_date', '<', $this->post_date)
                           ->published()
                           ->type('post');
-            $query->whereHas('taxonomies', function ($query) {
-                $query->category()->whereHas('term', function ($q2) {
-                    $q2->where('name', '=', $this->getMainCategoryAttribute());
+            if ($scopeToCat) {
+                $query->whereHas('taxonomies', function ($query) {
+                    $query->category()->whereHas('term', function ($q2) {
+                        $q2->where('name', '=', $this->getMainCategoryAttribute());
+                    });
                 });
-            });
+            }
 
             $this->previous = $query->orderBy('post_date', 'desc')->first();
         }
