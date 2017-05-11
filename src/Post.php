@@ -78,7 +78,7 @@ class Post extends Corcel
                 );
 
                 //get the resized filename, otherwise serve the full size url
-                if ( ! isset($attachmentMetadata['sizes'][$size]['file'])) {
+                if ( ! isset($attachmentMetadata['sizes'][ $size ]['file'])) {
                     return $this->thumbnail->attachment->guid;
                 }
 
@@ -93,7 +93,7 @@ class Post extends Corcel
 
                 // Rebuild the url with the thumbnail image.
                 return $imageUrl . implode('/',
-                        array_merge($imageParts, [$attachmentMetadata['sizes'][$size]['file']]));
+                        array_merge($imageParts, [$attachmentMetadata['sizes'][ $size ]['file']]));
             }
 
             return $this->thumbnail->attachment->guid;
@@ -119,10 +119,14 @@ class Post extends Corcel
      *
      * @param null $mutators
      *
+     * @param null $toReadMore
+     *
      * @return string
      */
-    public function getExcerpt($limit = 120, $mutators = null)
+    public function getExcerpt($limit = 120, $mutators = null, $toReadMore = false)
     {
+        $content = $this->post_content;
+
         if (is_array($mutators)) {
             foreach ($mutators as $mutator) {
                 if (strlen($mutator) < $limit) {
@@ -135,7 +139,11 @@ class Post extends Corcel
             $limit -= strlen($mutators);
         }
 
-        return str_limit(strip_tags($this->post_content), $limit);
+        if ($toReadMore) {
+            $content = $this->getReadMore($content);
+        }
+
+        return str_limit(strip_tags($content), $limit);
     }
 
     /**
@@ -255,6 +263,7 @@ class Post extends Corcel
     public function scopeHasTags(Builder $builder, $slugs)
     {
         $builder->whereHas('taxonomies', function ($query) use ($slugs) {
+
             $query->where('taxonomy', '=', 'post_tag')->whereHas('term', function ($query) use ($slugs) {
                 $query->whereIn('slug', $slugs);
             });
@@ -318,7 +327,7 @@ class Post extends Corcel
                         [$this->post_name]));
                 curl_setopt_array($curl, [
                     CURLOPT_RETURNTRANSFER => 1,
-                    CURLOPT_URL => $url
+                    CURLOPT_URL => $url,
                 ]);
 
                 $response = curl_exec($curl);
@@ -391,9 +400,9 @@ class Post extends Corcel
         if (is_object($attributes) && isset($attributes->post_type)
             && array_key_exists($attributes->post_type, static::$postTypes)
         ) {
-            $class = static::$postTypes[$attributes->post_type];
+            $class = static::$postTypes[ $attributes->post_type ];
         } elseif (is_array($attributes) && array_key_exists($attributes['post_type'], static::$postTypes)) {
-            $class = static::$postTypes[$attributes['post_type']];
+            $class = static::$postTypes[ $attributes['post_type'] ];
         } else {
             $class = get_called_class();
         }
@@ -405,5 +414,15 @@ class Post extends Corcel
         $model->setConnection($connection ?: $this->connection);
 
         return $model;
+    }
+
+    /**
+     * Gets the posts content up to the read more tag
+     *
+     * @param $content
+     */
+    private function getReadMore($content)
+    {
+        return explode('<!--more-->', $content)[0];
     }
 }
