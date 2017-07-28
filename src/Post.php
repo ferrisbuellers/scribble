@@ -297,6 +297,17 @@ class Post extends Corcel
     {
         $builder->whereIn(DB::raw('MONTHNAME(post_date)'), $months);
     }
+    
+    /**
+     * Get posts by yearS
+     *
+     * @param Builder $builder
+     * @param $year
+     */
+    public function scopePublishedYear(Builder $builder, $year)
+    {
+        $builder->whereIn(DB::raw('YEAR(post_date)'), $year);
+    }
 
     /**
      *  Get the associated tags
