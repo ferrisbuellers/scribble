@@ -9,7 +9,7 @@
     }
   ],
   "require": {
-    "fullstackfool/corcel": "~3.0"
+    "fullstackfool/corcel": "dev-master"
   },
   "autoload": {
     "psr-4": {
