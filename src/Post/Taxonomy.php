@@ -2,7 +2,7 @@
 
 namespace FullStackFool\Scribble\Post;
 
-use Corcel\TermTaxonomy as Corcel;
+use Corcel\Model\Taxonomy as Corcel;
 
 class Taxonomy extends Corcel
 {

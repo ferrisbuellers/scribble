@@ -2,7 +2,7 @@
 
 namespace FullStackFool\Scribble;
 
-use Corcel\Post as Corcel;
+use Corcel\Model\Post as Corcel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
