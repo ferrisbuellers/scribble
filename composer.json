@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "jgrossi/corcel": "^1.2"
+        "fullstackfool/corcel": "3.*"
     },
     "autoload": {
         "psr-4": {
