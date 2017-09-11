@@ -1,25 +1,25 @@
 {
-    "name": "fullstackfool/scribble",
-    "license": "MIT",
-    "description": "A wrapper for jgrossi/corcel laravel-wordpress package",
-    "authors": [
-        {
-            "name": "Karl Davies",
-            "email": "karldavies@gmlconsulting.co.uk"
-        }
-    ],
-    "require": {
-        "fullstackfool/corcel": "3.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "FullStackFool\\Scribble\\": "src"
-        }
-    },
-    "repositories": [
-         {
-             "type": "vcs",
-             "url": "https://github.com/fullstackfool/corcel.git"
-        },
+  "name": "fullstackfool/scribble",
+  "license": "MIT",
+  "description": "A wrapper for jgrossi/corcel laravel-wordpress package",
+  "authors": [
+    {
+      "name": "Karl Davies",
+      "email": "karldavies@gmlconsulting.co.uk"
     }
+  ],
+  "require": {
+    "fullstackfool/corcel": "3.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "FullStackFool\\Scribble\\": "src"
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/fullstackfool/corcel.git"
+    }
+  ]
 }
