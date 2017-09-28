@@ -6,12 +6,11 @@ use Corcel\Model\Taxonomy as Corcel;
 
 class Taxonomy extends Corcel
 {
-    /**
-     * Set the database connection for the model.
-     *
-     * @var string
-     */
-    protected $connection = 'wordpress';
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->connection = config('scribble.connection');
+    }
 
     /**
      * Relationship with Posts model

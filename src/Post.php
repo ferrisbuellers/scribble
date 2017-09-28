@@ -11,13 +11,6 @@ use Illuminate\Support\Facades\DB;
 class Post extends Corcel
 {
     /**
-     * Set the database connection.
-     *
-     * @var string
-     */
-    protected $connection = 'wordpress';
-
-    /**
      * The next post.
      *
      * @var mixed
@@ -45,6 +38,12 @@ class Post extends Corcel
      * @property integer shares
      */
     protected $shares;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->connection = config('scribble.connection');
+    }
 
 
     /**
@@ -115,11 +114,11 @@ class Post extends Corcel
     /**
      *  Get the excerpt for the post, limiting the length
      *
-     * @param int  $limit
+     * @param int $limit
      *
      * @param null $mutators
      *
-     * @param null $toReadMore
+     * @param bool|null $toReadMore
      *
      * @return string
      */
