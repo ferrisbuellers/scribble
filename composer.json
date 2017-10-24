@@ -13,17 +13,11 @@
     }
   ],
   "require": {
-    "fullstackfool/corcel": "~3.0"
+    "corcel/corcel": "~3.0"
   },
   "autoload": {
     "psr-4": {
       "FullStackFool\\Scribble\\": "src"
     }
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/fullstackfool/corcel.git"
-    }
-  ]
+  }
 }
