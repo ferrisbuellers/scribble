@@ -19,5 +19,11 @@
     "psr-4": {
       "FullStackFool\\Scribble\\": "src"
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/corcel/corcel.git"
+    }
+  ]  
 }
