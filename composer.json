@@ -13,7 +13,7 @@
     }
   ],
   "require": {
-    "jgrossi/corcel": "~3.0"
+    "jgrossi/corcel": "^2.5"
   },
   "autoload": {
     "psr-4": {
