@@ -23,7 +23,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/corcel/corcel.git"
+      "url": "https://github.com/corcel/corcel"
     }
   ]  
 }
