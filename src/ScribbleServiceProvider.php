@@ -13,4 +13,14 @@ class ScribbleServiceProvider extends ServiceProvider
         ]);
         $this->mergeConfigFrom(__DIR__ . '/../config/scribble.php', 'scribble');
     }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        // TODO: Implement register() method.
+    }
 }
